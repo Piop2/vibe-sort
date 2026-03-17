@@ -37,9 +37,6 @@ Validation requirements:
 - The number of elements must be identical to input.
 - "index" values must remain unchanged.
 - "value" must remain unchanged.
-
-Input:
-{INPUT_JSON}
 """
 
 USER_PROMPT_TEMPLATE = """
