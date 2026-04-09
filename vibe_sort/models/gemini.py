@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, cast
 
 from google import genai
 from google.genai import types
@@ -31,13 +31,13 @@ class GeminiSortClient(VibeSortClient):
         response = self.__client.models.generate_content(
             model=self._model_code.value,
             config=types.GenerateContentConfig(system_instruction=SYSTEM_PROMPT),
-            contents=self._create_prompt(array, key),
+            contents=self._create_prompt(array, cast(KeyFunction, key)),
         )
 
         if response.text is None:
             raise RuntimeError
 
-        sorted_list = self._parse_response(response.text, array)
+        sorted_list = self._parse_response(cast(str, response.text), array)
         if reverse:
             return sorted_list[::-1]
         return sorted_list
