@@ -1,0 +1,12 @@
+[project]
+name = "vibe_sort"
+version = "0.1.0"
+description = "The perfect solution for vibe coders"
+authors = [
+    { name = "Pio", email = "pioooop2@gmail.com" },
+]
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "google-genai~=1.72.0"
+]
