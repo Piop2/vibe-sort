@@ -3,31 +3,34 @@ from typing import Optional, cast
 from google import genai
 from google.genai import types
 
-from vibe_sort.client import KeyFunction, ModelCode, VibeSortClient, default_key
+from vibe_sort.client import KeyFunction, Model, VibeSortClient, default_key
 from vibe_sort.prompts import SYSTEM_PROMPT
 
 
-class GeminiModelCode(ModelCode):
-    GEMINI_3_FLASH_LITE = "gemini-3.1-flash-lite-preview"
+class GeminiModel(Model):
+    FLASH_LITE = "gemini-3.1-flash-lite-preview"
+
+
+GEMINI_FLASH_LITE = GeminiModel.FLASH_LITE
 
 
 class GeminiSortClient(VibeSortClient):
-    def __init__(self, api_key: str, model_code: GeminiModelCode) -> None:
+    def __init__(self, api_key: str, model_code: GeminiModel) -> None:
         super().__init__(api_key, model_code)
 
         self.__client = genai.Client(api_key=self._api_key)
         return
 
     def sort[T](
-        self,
-        array: list[T],
-        /,
-        key: Optional[KeyFunction] = None,
-        reverse: bool = False,
+            self,
+            array: list[T],
+            /,
+            key: Optional[KeyFunction] = None,
+            reverse: bool = False,
     ) -> list[T]:
         if key is None:
             key = default_key
-        
+
         response = self.__client.models.generate_content(
             model=self._model_code.value,
             config=types.GenerateContentConfig(system_instruction=SYSTEM_PROMPT),

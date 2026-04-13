@@ -18,11 +18,11 @@ def default_key(x: Any) -> int:
             raise TypeError
 
 
-class ModelCode(StrEnum): ...
+class Model(StrEnum): ...
 
 
 class VibeSortClient(ABC):
-    def __init__(self, api_key: str, model_code: ModelCode) -> None:
+    def __init__(self, api_key: str, model_code: Model) -> None:
         self._api_key = api_key
         self._model_code = model_code
         return
