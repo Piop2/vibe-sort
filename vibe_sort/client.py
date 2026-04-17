@@ -1,21 +1,33 @@
 import json
 from abc import ABC, abstractmethod
 from enum import StrEnum
-from typing import Any, Callable, Optional
+from typing import Any, Callable
 
 from vibe_sort.prompts import USER_PROMPT_TEMPLATE
 
-KeyFunction = Callable[[Any], int]
+KeyFunction = Callable[[Any], int | float | str]
+WrappedKeyFunction = Callable[[Any], int | float]
 
 
-def default_key(x: Any) -> int:
-    match x:
-        case int():
-            return x
-        case str():
-            return ord(x)
-        case _:
-            raise TypeError
+def default_key(x: Any) -> int | float | str:
+    if x is None:
+        raise TypeError
+
+    return x
+
+
+def key_wrapper(f: KeyFunction) -> WrappedKeyFunction:
+    def key(x: Any) -> int | float:
+        match f(x):
+            case int() | float():
+                return x
+            case str():
+                # what if x len is more than 2 ...?
+                return ord(x)
+            case _:
+                raise TypeError
+
+    return key
 
 
 class Model(StrEnum): ...
@@ -28,7 +40,7 @@ class VibeSortClient(ABC):
         return
 
     @staticmethod
-    def _create_prompt[T](array: list[T], key: KeyFunction) -> str:
+    def _create_prompt[T](array: list[T], key: WrappedKeyFunction) -> str:
         return USER_PROMPT_TEMPLATE.format(
             json.dumps(
                 {
@@ -49,6 +61,6 @@ class VibeSortClient(ABC):
             self,
             array: list[int],
             /,
-            key: Optional[KeyFunction] = None,
+            key: KeyFunction = default_key,
             reverse: bool = False,
     ) -> list[int]: ...

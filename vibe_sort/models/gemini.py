@@ -1,9 +1,9 @@
-from typing import Optional, cast
+from typing import cast
 
 from google import genai
 from google.genai import types
 
-from vibe_sort.client import KeyFunction, Model, VibeSortClient, default_key
+from vibe_sort.client import KeyFunction, Model, VibeSortClient, default_key, key_wrapper
 from vibe_sort.prompts import SYSTEM_PROMPT
 
 
@@ -25,16 +25,13 @@ class GeminiSortClient(VibeSortClient):
             self,
             array: list[T],
             /,
-            key: Optional[KeyFunction] = None,
+            key: KeyFunction = default_key,
             reverse: bool = False,
     ) -> list[T]:
-        if key is None:
-            key = default_key
-
         response = self.__client.models.generate_content(
             model=self._model_code.value,
             config=types.GenerateContentConfig(system_instruction=SYSTEM_PROMPT),
-            contents=self._create_prompt(array, cast(KeyFunction, key)),
+            contents=self._create_prompt(array, key_wrapper(key)),
         )
 
         if response.text is None:
