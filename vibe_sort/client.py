@@ -1,7 +1,7 @@
 import json
 from abc import ABC, abstractmethod
 from enum import StrEnum
-from typing import Any, Callable
+from typing import Any, Callable, Optional
 
 from vibe_sort.prompts import USER_PROMPT_TEMPLATE
 
@@ -34,9 +34,18 @@ class Model(StrEnum): ...
 
 
 class VibeSortClient(ABC):
-    def __init__(self, api_key: str, model_code: Model) -> None:
+    def __init__(self, model_code: str | Model,  api_key: Optional[str] = None) -> None:
         self._api_key = api_key
-        self._model_code = model_code
+
+        self._model_code: str
+        if isinstance(model_code, Model):
+            self._model_code = model_code.value
+
+        elif isinstance(model_code, str):
+            self._model_code = model_code
+
+        else:
+            raise TypeError()
         return
 
     @staticmethod
@@ -58,9 +67,9 @@ class VibeSortClient(ABC):
 
     @abstractmethod
     def sort(
-            self,
-            array: list[int],
-            /,
-            key: KeyFunction = default_key,
-            reverse: bool = False,
+        self,
+        array: list[int],
+        /,
+        key: KeyFunction = default_key,
+        reverse: bool = False,
     ) -> list[int]: ...
